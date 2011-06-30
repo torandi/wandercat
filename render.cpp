@@ -175,7 +175,6 @@ void render(double dt){
     vertices[15] = tc.d[0];
     vertices[16] = tc.d[1];
     a.s = fmod(a.s + dt, a.delay * a.frames);
-    printf("s: %f\n", a.s);
 
     /* render cat */
     glPushMatrix();
