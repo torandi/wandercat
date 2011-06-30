@@ -22,6 +22,20 @@ static double calc_step(struct timespec* ref, struct timespec* time, double max)
   return dt / max;
 }
 
+static bool can_do_move(pos_t *mov) {
+	int x,y;
+	x=pos_cat.x+mov->x;
+	y=pos_cat.y+mov->y;
+
+	if ( x < 0 || x >= GRID_WIDTH ){
+		return false;
+	}
+	if ( y < 0 || y >= GRID_HEIGHT){
+		return false;
+	}
+	return true;
+}
+
 void logic(struct timespec time, double dt){
   fprintf(verbose, "owner: %d\n", owner);
   switch ( state ){
@@ -93,41 +107,53 @@ void logic(struct timespec time, double dt){
       exit(1);
     }
 
-    signed int x;
-    signed int y;
+	 {
 
-    do {
-      x = pos_cat.x;
-      y = pos_cat.y;
+		 /**
+		  * Possible movements
+		  */
+		 pos_t m_back, m_fwd, m_t1, m_t2;
+		 m_fwd.x = pos_cat_prev.x - pos_cat.x;
+		 m_fwd.y = pos_cat_prev.y - pos_cat.y;
 
-      const int dir = rand() % 4;
-      switch ( dir ){
-      case 0:
-	x += 1;
-	break;
-      case 1:
-	x -= 1;
-	break;
-      case 2:
-	y += 1;
-	break;
-      case 3:
-	y -= 1;
-	break;
-      }
-      if ( x < 0 || x >= GRID_WIDTH ){
-	continue;
-      }
-      if ( y < 0 || y >= GRID_HEIGHT){
-	continue;
-      }
-		break;
-    } while ( 1 );
+		 m_back.x = -1*m_fwd.x;
+		 m_back.y = -1*m_fwd.y;
 
-    pos_cat_next.x = x;
-    pos_cat_next.y = y;
-	 printf("cat: (%i, %i)\n", x, y);
-    send_cat();
+		 m_t1.x = m_fwd.y;
+		 m_t1.y = m_fwd.x;
+
+		 m_t2.x = -1*m_fwd.y;
+		 m_t2.y = -1*m_fwd.x;
+
+		int frobb = rand() % 10;
+
+		pos_t * mov;
+	
+		while(1) {
+			if(frobb < 3) 
+				mov = &m_fwd;
+			else if(frobb < 6) 
+				mov = &m_t1;
+			else if(frobb < 9)
+				mov = &m_t2;
+			else 
+				mov = &m_back;
+
+			if(can_do_move(mov))
+				break;
+			--frobb;
+			if(frobb<0)
+				frobb=9;
+		}
+
+		pos_cat_prev = pos_cat;
+
+		 pos_cat_next.x += mov->x;
+		 pos_cat_next.y += mov->y;
+		 printf("cat: (%i, %i)\n", pos_cat.x+1, pos_cat.y+1);
+		 send_cat();
+
+	}
 
     state = CAT_WALKING;
     break;

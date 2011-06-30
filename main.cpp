@@ -119,6 +119,8 @@ int main(int argc, char* argv[]){
     fprintf(stderr, "Spawning cat at %d %d\n", pos_self.x+1, pos_self.y+1);
     owner = true;
     pos_cat = pos_self;
+	 pos_cat_prev = pos_cat;
+	 --pos_cat_prev.x;
   }
 
   /* verbose dst */
