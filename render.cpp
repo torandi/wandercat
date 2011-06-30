@@ -9,10 +9,10 @@
 
 static const unsigned int num_vertices = 4;
 static float vertices[2*num_vertices + 3*num_vertices] = {
-  0, 1,   0.0f, 0.0f, 0.0f,
-  0, 0,   0.0f, 1.0f, 0.0f,
-  1, 0,   1.0f, 1.0f, 0.0f,
-  1, 1,   1.0f, 0.0f, 0.0f
+  0, 1,   -0.5f, -0.5f, 0.0f,
+  0, 0,   -0.5f,  0.5f, 0.0f,
+  1, 0,    0.5f,  0.5f, 0.0f,
+  1, 1,    0.5f, -0.5f, 0.0f
 };
 static struct {
   float x;
@@ -57,10 +57,19 @@ void render_init(int w, int h){
   SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_DOUBLEBUF);
   glewInit();
 
+  glMatrixMode(GL_PROJECTION);
+  gluPerspective(45, ((float)w)/((float)h), 0.001, 100);
+
   /* orthographic projection */
-  glOrtho(0, w, 0, h, -1.0, 1.0);
-  glScalef(1, -1, 1);
-  glTranslated(0, -h, 0);
+  //glOrtho(0, w, 0, h, -1.0, 1.0);
+  //glScalef(1, -1, 1);
+  //glTranslated(0, -h, 0);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  gluLookAt(pos_self.x * 3, pos_self.y, 2,
+  	    pos_self.x * 3, pos_self.y, 0,
+  	    0, 1, 0);
   glViewport(0, 0, w, h);
 
   center.x = (float)w / 2;
@@ -72,6 +81,7 @@ void render_init(int w, int h){
   glClearColor(1,0,1,1);
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
+  glDisable(GL_CULL_FACE);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* load textures */
@@ -83,25 +93,13 @@ void render_init(int w, int h){
 void render(double dt){
   glClear(GL_COLOR_BUFFER_BIT);
 
-  float x;
-  float y;
-  float size;
-  bool render = true;
+  float x = pos_cat.x;
+  float z = pos_cat.y* 2;
 
   animation_t* a = NULL;
 
   switch ( state ){
   case CAT_WAIVING:
-    /* don't render the cat if it isn't in our position (cat is on a
-     * grid-position where no client is connected, so we kept the cat) */
-    if ( !(pos_self == pos_cat) ){
-      render = false;
-      break;
-    }
-
-    size = 512;
-    x = center.x - size * 0.5f;
-    y = center.y - size * 0.5f;
     a = &anim[ANIM_WAIVING];
     break;
 
@@ -109,53 +107,8 @@ void render(double dt){
     {
       const pos_t delta = pos_cat_next - pos_cat;
 
-      enum {
-	ENTER,
-	EXIT,
-	OTHER,
-      } direction = OTHER;
-
-      /* determine direction */
-      if ( pos_self == pos_cat ){
-	direction = EXIT;
-      } else if ( pos_self == pos_cat_next ){
-	direction = ENTER;
-      }
-
-      /* don't render the cat if it isn't in our position (cat is on a
-       * grid-position where no client is connected, so we kept the cat) */
-      if ( direction == OTHER ){
-	render = false;
-	break;
-      }
-
-      /* only render first part if exiting the screen */
-      if ( direction == EXIT && step > 0.5 ){
-	render = false;
-	break;
-      }
-    
-      /* only render second part if enterin the screen */
-      if ( direction == ENTER && step < 0.5 ){
-	render = false;
-	break;
-      }
-
-      size = 512;
-      x = center.x - (size*0.5);
-      y = center.y - (size*0.5);
-
-      const int dx = pos_cat_next.x - pos_cat.x;
-      const int dy = pos_cat_next.y - pos_cat.y;
-
-      if ( direction == EXIT ){
-	x += window.w * step * 2.0 * dx;
-	y -= window.h * step * 2.0 * dy;
-      } else {
-	const float sinv = 1.0f - step;
-	x -= window.w * sinv * 2.0 * dx;
-	y += window.h * sinv * 2.0 * dy;
-      }
+      x = (float)delta.x * step + pos_cat.x;
+      z = (float)delta.y * step + pos_cat.y;
 
       /* left or right? */
       if ( delta.x > 0 ){
@@ -168,41 +121,41 @@ void render(double dt){
 
   default:
     fprintf(verbose, "nothing to render\n");
-    fprintf(verbose, "step: %f\n", step);
-    render = false;
+    //fprintf(verbose, "step: %f\n", step);
+    //render = false;
+    break;
   }
 
-  if ( render ){
-    glColor4f(1,1,1,1);
+  glColor4f(1,1,1,1);
 
-    if ( a ){
-      a->texture->bind();
-      const unsigned int index = (int)(a->s * a->frames);
-      Texture::texcoord_t tc = a->texture->index_to_texcoord(index);
-      vertices[ 0] = tc.a[0];
-      vertices[ 1] = tc.a[1];
-      vertices[ 5] = tc.b[0];
-      vertices[ 6] = tc.b[1];
-      vertices[10] = tc.c[0];
-      vertices[11] = tc.c[1];
-      vertices[15] = tc.d[0];
-      vertices[16] = tc.d[1];
-      a->s = fmod(a->s + dt, a->delay * a->frames);
-    }
+  if ( a ){
+    a->texture->bind();
+    const unsigned int index = (int)(a->s * a->frames);
+    Texture::texcoord_t tc = a->texture->index_to_texcoord(index);
+    vertices[ 0] = tc.a[0];
+    vertices[ 1] = 1-tc.a[1];
+    vertices[ 5] = tc.b[0];
+    vertices[ 6] = 1-tc.b[1];
+    vertices[10] = tc.c[0];
+    vertices[11] = 1-tc.c[1];
+    vertices[15] = tc.d[0];
+    vertices[16] = 1-tc.d[1];
+    a->s = fmod(a->s + dt, a->delay * a->frames);
+  }
 
-    /* render cat */
-    glPushMatrix();
-    {
-      glTranslatef(x, y, 0.0f);
-      glScalef(size, size, 1.0);
-      glInterleavedArrays(GL_T2F_V3F, sizeof(float)*5, vertices);
-      glDrawArrays(GL_QUADS, 0, num_vertices);
-    }
-    glPopMatrix();
+  /* render cat */
+  glPushMatrix();
+  {
+    //printf("%f\n", x);
+    glTranslatef(x * 3, 0.0, z);
+    //glScalef(size, size, 1.0);
+    glInterleavedArrays(GL_T2F_V3F, sizeof(float)*5, vertices);
+    glDrawArrays(GL_QUADS, 0, num_vertices);
+  }
+  glPopMatrix();
 
-    if ( a ){
-      a->texture->unbind();
-    }
+  if ( a ){
+    a->texture->unbind();
   }
 
 #ifdef VSYNC
