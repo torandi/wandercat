@@ -4,6 +4,7 @@
 #include <time.h>
 #include <cstdio>
 #include <cstdlib>
+#include <vector>
 
 state_t state = CAT_FRIST;
 static struct timespec ref;
@@ -22,10 +23,10 @@ static double calc_step(struct timespec* ref, struct timespec* time, double max)
   return dt / max;
 }
 
-static bool can_do_move(pos_t *mov) {
+static bool can_do_move(const pos_t &mov) {
 	int x,y;
-	x=pos_cat.x+mov->x;
-	y=pos_cat.y+mov->y;
+	x=pos_cat.x+mov.x;
+	y=pos_cat.y+mov.y;
 
 	if ( x < 0 || x >= GRID_WIDTH ){
 		return false;
@@ -112,50 +113,61 @@ void logic(struct timespec time, double dt){
 		 /**
 		  * Possible movements
 		  */
-		 pos_t m_back, m_fwd, m_t1, m_t2;
-		 m_fwd.x = pos_cat_prev.x - pos_cat.x;
-		 m_fwd.y = pos_cat_prev.y - pos_cat.y;
-
-		 m_back.x = -1*m_fwd.x;
-		 m_back.y = -1*m_fwd.y;
-
-		 m_t1.x = m_fwd.y;
-		 m_t1.y = m_fwd.x;
-
-		 m_t2.x = -1*m_fwd.y;
-		 m_t2.y = -1*m_fwd.x;
-
-		int frobb = rand() % 10;
-
-		pos_t * mov;
+		 pos_t m_back;
+		 m_back.x = pos_cat_prev.x - pos_cat.x;
+		 m_back.y = pos_cat_prev.y - pos_cat.y;
 	
-		while(1) {
-			if(frobb < 3) 
-				mov = &m_fwd;
-			else if(frobb < 6) 
-				mov = &m_t1;
-			else if(frobb < 9)
-				mov = &m_t2;
-			else 
-				mov = &m_back;
+		printf("(%d, %d) -> (%d, %d) => (%d, %d)\n", pos_cat.x+1,pos_cat.y+1, pos_cat_prev.x+1,pos_cat_prev.y+1,m_back.x,m_back.y);
+	
+		std::vector<pos_t> frobnications;
 
-			if(can_do_move(mov))
-				break;
-			--frobb;
-			if(frobb<0)
-				frobb=9;
+		 pos_t mov;
+		 for(int i=0;i<4;++i) {
+		 	mov.x=0;
+			mov.y=0;
+		 	switch(i) {
+				case 0:
+					mov.x = 1;
+					break;
+				case 1:
+					mov.x = -1;
+					break;
+				case 2:
+					mov.y = 1;
+					break;
+				case 3:
+					mov.y = -1;
+			}
+
+			if(!can_do_move(mov))
+				continue;
+			if(mov != m_back) { 
+				//Increase probability for this mov
+				frobnications.push_back(mov);
+				frobnications.push_back(mov);
+				frobnications.push_back(mov);
+			} else {
+				frobnications.push_back(mov);
+			}
+		 }
+
+		//select move:
+		if(frobnications.size() > 0) {
+			int frobb = rand() % frobnications.size();
+
+			pos_cat_next.x = pos_cat.x + frobnications[frobb].x;
+			pos_cat_next.y = pos_cat.y + frobnications[frobb].y;
+		
+			state = CAT_WALKING;
+
+			printf("cat: (%i, %i)\n", pos_cat.x+1, pos_cat.y+1);
+			send_cat();
+		} else {
+			state = CAT_WAIVING;
 		}
-
-		pos_cat_prev = pos_cat;
-
-		 pos_cat_next.x += mov->x;
-		 pos_cat_next.y += mov->y;
-		 printf("cat: (%i, %i)\n", pos_cat.x+1, pos_cat.y+1);
-		 send_cat();
 
 	}
 
-    state = CAT_WALKING;
     break;
 
   case CAT_TEAPOT:
