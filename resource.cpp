@@ -3,7 +3,9 @@
 #include <cstdio>
 #include <cstdlib>
 
+#ifdef HAVE_FAM
 FAMConnection* fam_connection();
+#endif
 
 Resource::Resource(const char* path){
 #ifdef HAVE_FAM

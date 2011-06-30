@@ -1,0 +1,6 @@
+#!/bin/sh
+rm sheet.png
+rm sheet_inv.png
+for z in *.png; do convert -extent 513x512 -gravity center -background transparent $z sized/$z; done
+montage `ls sized/*.png` -tile x1 -background transparent -geometry 512x512+0+0 sheet.png
+convert -flop sheet.png sheet_inv.png

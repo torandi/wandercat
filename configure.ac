@@ -16,7 +16,7 @@ AS_IF([test "x$with_fam" == "xyes"], [
 		AC_DEFINE([HAVE_FAM], 1, [Define to 1 if you have FAM])
 	])]
 )
-AM_CONDITIONAL(HAVE_FAM, [test "x$with_fam" != "xyes"])
+AM_CONDITIONAL(HAVE_FAM, [test "x$with_fam" == "xyes"])
 
 
 AC_OUTPUT
