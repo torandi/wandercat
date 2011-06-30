@@ -7,7 +7,8 @@
 #define GRID_WIDTH 10
 #define GRID_HEIGHT 10
 
-#define WAIVE_TIME 10
+#define WALK_TIME 10
+#define WAIVE_TIME 5
 
 struct pos_t {
   uint16_t x;
