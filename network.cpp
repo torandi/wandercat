@@ -68,8 +68,10 @@ void network() {
 		if(size >= 3) {
 			if(CMD("mov")) {
 				sscanf(buffer+4,"%hu %hu %hu %hu",&pos_cat_prev.x, &pos_cat_prev.y, &pos_cat.x, &pos_cat.y);
+				printf("Cat moved (%hu, %hu) -> (%hu, %hu)\n", pos_cat_prev.x, pos_cat_prev.y, pos_cat.x, pos_cat.y);
 
 				if(pos_cat == pos_self) {
+					printf("Assuming ownership of cat");
 					//Ack server
 					sendto(sockfd, "ack", 3, 0, (sockaddr*) &broadcast_addr, sizeof(sockaddr_in));
 					owner = true;
@@ -96,6 +98,7 @@ bool send_cat() {
 		size = recvfrom(sockfd, buffer, 1024, 0, NULL, NULL); 
 		if(size >=3) {
 			if(CMD("ack")) {
+				printf("We lost the cat!\n");
 				//Someone took over the cat
 				return false;
 			}

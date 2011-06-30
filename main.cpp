@@ -1,6 +1,7 @@
 #include "common.h"
 #include "render.h"
 #include "logic.h"
+#include "network.h"
 
 #include <time.h>
 #include <unistd.h>
@@ -10,7 +11,9 @@
 #define REF_FPS 30
 #define REF_DT (1.0/REF_FPS)
 
+pos_t pos_cat_prev = {0,0};
 pos_t pos_cat = {0,0};
+pos_t pos_cat_next = {0,0};
 pos_t pos_self = {0,0};
 float step = 0.0f;
 FILE* verbose = NULL;
@@ -21,6 +24,8 @@ static void setup(int w, int h){
   SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_DOUBLEBUF);
 
   glClearColor(1,0,1,1);
+
+  init_network();
 }
 
 static void cleanup(){
@@ -67,10 +72,10 @@ int main(int argc, const char* argv[]){
   }
 
   /* verbose dst */
-#if 1
+#if 0
   verbose = stdout;
 #else
-  verbose = fopen("/dev/null");
+  verbose = fopen("/dev/null","w");
 #endif
 
   setup(800, 600);
@@ -90,9 +95,10 @@ int main(int argc, const char* argv[]){
 
     /* do stuff */
     poll(&run);
+	 network();
     logic(ts, dt);
-    render(dt);
-    
+	 render(dt);
+		 
     /* framelimiter */
     const int delay = (REF_DT - dt) * 1000000;
     if ( delay > 0 ){
