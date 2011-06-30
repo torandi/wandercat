@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <stdint.h>
 
-#define GRID_WIDTH 4
+#define GRID_WIDTH 3
 #define GRID_HEIGHT 1
 
 #define WALK_TIME 3
@@ -79,6 +79,7 @@ enum state_t {
   CAT_FRIST,
   CAT_WALKING,
   CAT_WAIVING,
+  CAT_IDLE,
   CAT_FROBNICATING,
   CAT_TEAPOT,
 };

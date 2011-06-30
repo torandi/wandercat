@@ -82,7 +82,7 @@ void logic(struct timespec time, double dt){
 	    if ( owner ){
 		set_state(CAT_FROBNICATING, time);
 	    } else {
-		set_state(CAT_WALKING, time);
+		set_state(CAT_IDLE, time);
 	    }
 	}
 
@@ -155,6 +155,13 @@ void logic(struct timespec time, double dt){
 	}
 
 	break;
+
+    case CAT_IDLE:
+      if ( pos_cat_next.x != pos_cat.x || pos_cat_next.y != pos_cat.y ){
+	set_state(CAT_WALKING, time);
+      }
+
+      break;
 
     case CAT_TEAPOT:
 	fprintf(verbose, "state: TEAPOT\n");

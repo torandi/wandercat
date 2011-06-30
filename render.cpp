@@ -113,7 +113,7 @@ static void render_cat(animation_t* anim, float x, float z, const double dt){
   /* render cat */
   glPushMatrix();
   {
-    //printf("%f\n", x);
+    printf("%f\n", x * XSCALE);
     glTranslatef(x * XSCALE, 0.0, z);
     //glScalef(size, size, 1.0);
     glInterleavedArrays(GL_T2F_V3F, sizeof(float)*5, vertices);
@@ -137,7 +137,7 @@ void render(double dt){
 
   switch ( state ){
   case CAT_WAIVING:
-    //case CAT_IDLE:
+  case CAT_IDLE:
     anim = &animation[ANIM_WAIVING];
     break;
 
