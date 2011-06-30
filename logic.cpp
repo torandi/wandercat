@@ -67,6 +67,7 @@ void logic(struct timespec time, double dt){
 	    break;
 	}
 
+	pos_cat_prev = pos_cat;
 	pos_cat = pos_cat_next;
 	set_state(CAT_WAIVING, time);
 	break;
