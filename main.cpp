@@ -5,7 +5,6 @@
 
 #include <time.h>
 #include <unistd.h>
-#include <GL/gl.h>
 #include <SDL/SDL.h>
 
 #define REF_FPS 30
@@ -20,11 +19,7 @@ FILE* verbose = NULL;
 bool owner;
 
 static void setup(int w, int h){
-  SDL_Init(SDL_INIT_VIDEO);
-  SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_DOUBLEBUF);
-
-  glClearColor(1,0,1,1);
-
+  render_init(w, h);
   init_network();
 }
 
@@ -60,20 +55,22 @@ int main(int argc, const char* argv[]){
     exit(1);
   }
 
+  srand((unsigned int)time(NULL));
+
   /* store position */
   pos_self.x = read_val(argv[1], GRID_WIDTH);
   pos_self.y = read_val(argv[2], GRID_HEIGHT);
 
   /* start cat? */
-  const bool start = argc >= 4;
-  if ( start ){
+  owner = argc >= 4;
+  if ( owner ){
     fprintf(stderr, "Spawning cat at %d %d\n", pos_self.x+1, pos_self.y+1);
     owner = true;
     pos_cat = pos_self;
   }
 
   /* verbose dst */
-#if 0
+#ifdef EXT_VERBOSE
   verbose = stdout;
 #else
   verbose = fopen("/dev/null","w");

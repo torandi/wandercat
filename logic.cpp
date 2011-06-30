@@ -1,5 +1,6 @@
 #include "logic.h"
 #include "common.h"
+#include "network.h"
 #include <time.h>
 #include <cstdio>
 #include <cstdlib>
@@ -11,6 +12,7 @@ static void set_state(enum state_t n, struct timespec time){
   fprintf(verbose, "changing state to %d\n", n);
   ref = time;
   state = n;
+  step = 0.0f;
 }
 
 static double calc_step(struct timespec* ref, struct timespec* time, double max){
@@ -26,19 +28,20 @@ void logic(struct timespec time, double dt){
     fprintf(verbose, "state: FRIST\n");
     step = 0.0f;
     
-    if ( pos_cat.x == pos_self.x && pos_cat.y == pos_self.y ){
+    if ( owner ){
       set_state(CAT_WAIVING, time);
     } else {
-      set_state(CAT_WAIVING, time);
+      set_state(CAT_IDLE, time);
     }
     
     break;
 
   case CAT_WALKING:
     fprintf(verbose, "state: WALKING\n");
-    //if ( step > 0.3f && step < 0.7 ){
-    //  state = CAT_WAIVING;
-    //}
+    step = calc_step(&ref, &time, WALK_TIME);
+    if ( step > 1.0f ){
+      set_state(CAT_IDLE, time);
+    }
     break;
 
   case CAT_WAIVING:
@@ -61,6 +64,45 @@ void logic(struct timespec time, double dt){
 
   case CAT_FROBNICATING:
     fprintf(verbose, "state: FROBNICATING\n");
+    if ( !owner ){
+      fprintf(stderr, "omg wtf? not owner but frobnicating\n");
+      exit(1);
+    }
+
+    signed int x;
+    signed int y;
+
+    do {
+      x = pos_cat.x;
+      y = pos_cat.y;
+
+      const int dir = rand() % 4;
+      switch ( dir ){
+      case 0:
+	x += 1;
+	break;
+      case 1:
+	x -= 1;
+	break;
+      case 2:
+	y += 1;
+	break;
+      case 3:
+	y -= 1;
+	break;
+      }
+      if ( x < 0 || x >= GRID_WIDTH ){
+	continue;
+      }
+      if ( y < 0 || y >= GRID_WIDTH ){
+	continue;
+      }
+    } while ( 0 );
+
+    pos_cat_next.x = x;
+    pos_cat_next.y = y;
+    owner = send_cat();
+
     state = CAT_WALKING;
     break;
 
