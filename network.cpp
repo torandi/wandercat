@@ -39,6 +39,11 @@ void init_network() {
 		exit(1);
 	}
 
+	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int)) == -1) {
+		perror("network(): setsockopt SO_REUSEADDR");
+		exit(1);
+	}
+
 	int x;
 	x=fcntl(sockfd,F_GETFL,0);
 	fcntl(sockfd,F_SETFL,x | O_NONBLOCK);
@@ -47,11 +52,10 @@ void init_network() {
 	broadcast_addr.sin_port = htons(PORT);
 	broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);	
 
-	FD_ZERO(&readset);
-	FD_SET(sockfd,&readset);
-
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
+	if(bind(sockfd, (sockaddr *) &broadcast_addr, sizeof(sockaddr_in)) < 0) {
+		perror("network(): bind");
+		exit(1);
+	}
 }
 
 /**
@@ -63,8 +67,16 @@ void network() {
 	struct sockaddr src_addr;
 	socklen_t addrlen;
 
+	FD_ZERO(&readset);
+	FD_SET(sockfd,&readset);
+
+	tv.tv_sec = 0;
+	tv.tv_usec = 0;
+
 	if(select(sockfd+1,&readset,NULL,NULL,&tv) > 0) {
+		printf("revc-eou\n");
 		size = recvfrom(sockfd, buffer, 1024, 0, &src_addr, &addrlen);
+		printf("Got data: %s\n", buffer);
 		if(size >= 3) {
 			if(CMD("mov")) {
 				sscanf(buffer+4,"%hu %hu %hu %hu",&pos_cat_prev.x, &pos_cat_prev.y, &pos_cat.x, &pos_cat.y);
@@ -92,8 +104,14 @@ bool send_cat() {
 	size_t size;
 	sprintf(buffer, "mov %hu %hu %hu %hu",pos_cat.x, pos_cat.y, pos_cat_next.x, pos_cat_next.y);
 	sendto(sockfd, buffer, strlen(buffer), 0, (sockaddr*) &broadcast_addr, sizeof(sockaddr_in));
+	printf("Sending cat: %s\n", buffer);
+
+	FD_ZERO(&readset);
+	FD_SET(sockfd,&readset);
+
 	//Wait 1 sec and see if anybody acks
 	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 	if(select(sockfd +1, &readset, NULL, NULL, &tv) > 0) {
 		size = recvfrom(sockfd, buffer, 1024, 0, NULL, NULL); 
 		if(size >=3) {

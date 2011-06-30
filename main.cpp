@@ -68,6 +68,7 @@ int main(int argc, const char* argv[]){
   const bool start = argc >= 4;
   if ( start ){
     fprintf(stderr, "Spawning cat at %d %d\n", pos_self.x+1, pos_self.y+1);
+    owner = true;
     pos_cat = pos_self;
   }
 
