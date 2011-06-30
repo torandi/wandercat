@@ -7,6 +7,12 @@
 #include "common.h"
 #include "network.h"
 
+static struct package_t {
+	char domain;
+	pos_t from;
+	pos_t to;
+}
+
 static struct sockaddr_in relay_addr;
 static int sockfd;
 static fd_set readset;
@@ -43,7 +49,8 @@ void init_network() {
 }
 
 void network() {
+	package_t pkg;
 	if(select(sockfd+1,&readset,NULL,NULL,&tv) > 0) {
-			
+		recvfrom(sockfd, &pkg, sizeof(package_t), 0, NULL, NULL);
 	}
 }
