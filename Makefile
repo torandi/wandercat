@@ -11,4 +11,7 @@ clean:
 	rm -rf *.o wandercat
 
 %.o : %.cpp
+	@$(CXX) -MM $(CFLAGS) $< > $*.d
 	$(CXX) $(CFLAGS) -c $< -o $@
+
+-include $(OBJS:.o=.d)
