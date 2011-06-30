@@ -94,13 +94,15 @@ void logic(struct timespec time, double dt){
       if ( x < 0 || x >= GRID_WIDTH ){
 	continue;
       }
-      if ( y < 0 || y >= GRID_WIDTH ){
+      if ( y < 0 || y >= GRID_HEIGHT){
 	continue;
       }
-    } while ( 0 );
+		break;
+    } while ( 1 );
 
     pos_cat_next.x = x;
     pos_cat_next.y = y;
+	 printf("cat: (%i, %i)\n", x, y);
     owner = send_cat();
 
     state = CAT_WALKING;
