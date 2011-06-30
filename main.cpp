@@ -14,6 +14,7 @@ pos_t pos_cat = {0,0};
 pos_t pos_self = {0,0};
 float step = 0.0f;
 FILE* verbose = NULL;
+bool owner;
 
 static void setup(int w, int h){
   SDL_Init(SDL_INIT_VIDEO);
