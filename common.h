@@ -4,11 +4,11 @@
 #include <cstdio>
 #include <stdint.h>
 
-#define GRID_WIDTH 10
-#define GRID_HEIGHT 10
+#define GRID_WIDTH 1
+#define GRID_HEIGHT 2
 
-#define WALK_TIME 10
-#define WAIVE_TIME 5
+#define WALK_TIME 3
+#define WAIVE_TIME 1
 
 struct pos_t {
   uint16_t x;

@@ -23,6 +23,7 @@ static double calc_step(struct timespec* ref, struct timespec* time, double max)
 }
 
 void logic(struct timespec time, double dt){
+  fprintf(verbose, "owner: %d\n", owner);
   switch ( state ){
   case CAT_FRIST:
     fprintf(verbose, "state: FRIST\n");
@@ -37,15 +38,35 @@ void logic(struct timespec time, double dt){
     break;
 
   case CAT_WALKING:
-    fprintf(verbose, "state: WALKING\n");
+    /* The cat is currently moving from pos_cat to pos_cat_next */
+
     step = calc_step(&ref, &time, WALK_TIME);
-    if ( step > 1.0f ){
-      set_state(CAT_IDLE, time);
+    fprintf(verbose, "state: WALKING [%3d%%] src(%d,%d) -> dst(%d,%d)\n",
+	    (int)(step*100),
+	    pos_cat.x+1, pos_cat.y+1,
+	    pos_cat_next.x+1, pos_cat_next.y+1);
+    
+    if ( step < 1.0f ){
+      break;
     }
+
+    /* If we still own the cat at this stage, it means there weren't any client
+     * connected at that grid position, thus we should keep the "token" and have
+     * the cat keep walking. */
+    if ( owner ){
+      pos_cat = pos_cat_next;
+      set_state(CAT_WAIVING, time);
+      break;
+    }
+
+    /* wait until the cat enters our screen */
+    set_state(CAT_IDLE, time);
     break;
 
   case CAT_WAIVING:
-    fprintf(verbose, "state: WAIVING\n");
+    fprintf(verbose, "state: WAIVING [%3d%%] at (%d,%d)\n", 
+	    (int)(step*100),
+	    pos_cat.x+1, pos_cat.y+1);
     step = calc_step(&ref, &time, WAIVE_TIME);
 
     if ( step > 1.0f ){
@@ -60,6 +81,9 @@ void logic(struct timespec time, double dt){
 
   case CAT_IDLE:
     fprintf(verbose, "state: IDLE\n");
+    if ( owner ){
+      set_state(CAT_WALKING, time);
+    }
     break;
 
   case CAT_FROBNICATING:

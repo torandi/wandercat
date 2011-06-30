@@ -49,22 +49,67 @@ void render(double dt){
 
   switch ( state ){
   case CAT_WAIVING:
+    /* don't render the cat if it isn't in our position (cat is on a
+     * grid-position where no client is connected, so we kept the cat) */
+    if ( !(pos_self == pos_cat) ){
+      render = false;
+      break;
+    }
+
     size = 512;
     x = center.x - size * 0.5f;
     y = center.y - size * 0.5f;
     break;
 
   case CAT_WALKING:
-    if ( step > 0.5 ){
-      render = false;
-      break;
-    }
-    size = 512;
     {
-      int dx = pos_cat_next.x - pos_cat.x;
-      int dy = pos_cat_next.y - pos_cat.y;
-      x = center.x - (size * 0.5) + (window.w * step * 2.0 * dx); 
-      y = center.y - (size * 0.5) + (window.h * step * 2.0 * dy); 
+      enum {
+	ENTER,
+	EXIT,
+	OTHER,
+      } direction = OTHER;
+
+      /* determine direction */
+      if ( pos_self == pos_cat ){
+	direction = EXIT;
+      } else if ( pos_self == pos_cat_next ){
+	direction = ENTER;
+      }
+
+      /* don't render the cat if it isn't in our position (cat is on a
+       * grid-position where no client is connected, so we kept the cat) */
+      if ( direction == OTHER ){
+	render = false;
+	break;
+      }
+
+      /* only render first part if exiting the screen */
+      if ( direction == EXIT && step > 0.5 ){
+	render = false;
+	break;
+      }
+    
+      /* only render second part if enterin the screen */
+      if ( direction == ENTER && step < 0.5 ){
+	render = false;
+	break;
+      }
+
+      size = 512;
+      x = center.x - (size*0.5);
+      y = center.y - (size*0.5);
+
+      const int dx = pos_cat_next.x - pos_cat.x;
+      const int dy = pos_cat_next.y - pos_cat.y;
+
+      if ( direction == EXIT ){
+	x += window.w * step * 2.0 * dx;
+	y -= window.h * step * 2.0 * dy;
+      } else {
+	const float sinv = 1.0f - step;
+	x -= window.w * sinv * 2.0 * dx;
+	y += window.h * sinv * 2.0 * dy;
+      }
     }
     break;
 
