@@ -5,7 +5,7 @@ LDFLAGS += `sdl-config --libs`
 all: wandercat
 
 wandercat: $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) -o $@
+	$(CXX) $(OBJS) $(LDFLAGS) -o $@
 
 clean:
 	rm -rf *.o wandercat
