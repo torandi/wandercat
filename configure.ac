@@ -18,5 +18,10 @@ AS_IF([test "x$with_fam" == "xyes"], [
 )
 AM_CONDITIONAL(HAVE_FAM, [test "x$with_fam" == "xyes"])
 
+AC_ARG_VAR([PORT], [Port to run wandercat in. @<:@default=4711@:>@])
+AS_IF([test -z "$PORT"],
+        [AC_DEFINE([PORT], 4711, [Port to run wandercat in])],
+        [AC_DEFINE_UNQUOTED([PORT], $PORT, [Port to run wandercat in])]
+)
 
 AC_OUTPUT
