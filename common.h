@@ -70,6 +70,11 @@ extern bool owner;
  */
 extern float step;
 
+/**
+ * Port to broadcast on
+ */
+extern int port;
+
 enum state_t {
   CAT_FRIST,
   CAT_WALKING,

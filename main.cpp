@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "common.h"
 #include "render.h"
 #include "logic.h"
@@ -6,6 +10,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <SDL/SDL.h>
+#include <getopt.h>
 
 #ifdef HAVE_FAM
 #       include <fam.h>
@@ -22,6 +27,7 @@ pos_t pos_self(0,0);
 float step = 0.0f;
 FILE* verbose = NULL;
 bool owner;
+int port = PORT;
 
 #ifdef HAVE_FAM
 static FAMConnection _fam_connection;
@@ -65,9 +71,38 @@ static uint16_t read_val(const char* str, int max){
   return v - 1;
 }
 
-int main(int argc, const char* argv[]){
-  if ( argc < 3 ){
-    fprintf(stderr, "usage: wandercat X Y\n");
+int main(int argc, char* argv[]){
+  static struct option long_options[] =
+  {
+		{"spawn", no_argument, 0, 's' },
+		{"port", required_argument, 0, 'p' }
+  };
+
+  int option_index = 0;
+  int c;
+
+  while(1) {
+  	c = getopt_long(argc, argv, "sp:", long_options, &option_index);
+	if(c == -1)
+		break;
+
+	switch(c) {
+		case 0:
+			break;
+		case 's':
+			owner = true;
+			break;
+		case 'p':
+			port = atoi(optarg);
+			printf("Set port to %i\n", port);
+			break;
+		default:
+			break;
+	}
+  }
+
+  if ( argc - optind != 2 ){
+    fprintf(stderr, "usage: wandercat [options] X Y\n");
     fprintf(stderr, "  where X is between 1 and %d\n", GRID_WIDTH);
     fprintf(stderr, "        Y is between 1 and %d\n", GRID_HEIGHT);
     exit(1);
@@ -76,11 +111,10 @@ int main(int argc, const char* argv[]){
   srand((unsigned int)time(NULL));
 
   /* store position */
-  pos_self.x = read_val(argv[1], GRID_WIDTH);
-  pos_self.y = read_val(argv[2], GRID_HEIGHT);
+  pos_self.x = read_val(argv[optind++], GRID_WIDTH);
+  pos_self.y = read_val(argv[optind++], GRID_HEIGHT);
 
   /* start cat? */
-  owner = argc >= 4;
   if ( owner ){
     fprintf(stderr, "Spawning cat at %d %d\n", pos_self.x+1, pos_self.y+1);
     owner = true;

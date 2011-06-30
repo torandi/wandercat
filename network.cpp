@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -54,7 +50,7 @@ void init_network() {
 	fcntl(sockfd,F_SETFL,x | O_NONBLOCK);
 
 	broadcast_addr.sin_family = AF_INET;
-	broadcast_addr.sin_port = htons(PORT);
+	broadcast_addr.sin_port = htons(port);
 	broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);	
 
 	if(bind(sockfd, (sockaddr *) &broadcast_addr, sizeof(sockaddr_in)) < 0) {
