@@ -40,7 +40,7 @@ static void poll(bool* run){
 
 static uint16_t read_val(const char* str, int max){
   const int v = atoi(str);
-  if ( v < 0 || v > max ){
+  if ( v < 1 || v > max ){
     fprintf(stderr, "invalid grid value\n");
     exit(1);
   }

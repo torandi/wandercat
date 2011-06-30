@@ -4,8 +4,8 @@
 #include <cstdio>
 #include <stdint.h>
 
-#define GRID_WIDTH 2
-#define GRID_HEIGHT 2
+#define GRID_WIDTH 4
+#define GRID_HEIGHT 1
 
 #define WALK_TIME 3
 #define WAIVE_TIME 1
@@ -14,8 +14,12 @@ struct pos_t {
   uint16_t x;
   uint16_t y;
 
-  bool operator==(const pos_t &other) {
+  bool operator==(const pos_t &other) const {
 		return (x == other.x && y == other.y);
+  }
+
+  bool operator!=(const pos_t &other) const {
+		return !(*this == other);
   }
 };
 

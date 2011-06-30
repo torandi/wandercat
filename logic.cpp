@@ -127,7 +127,7 @@ void logic(struct timespec time, double dt){
     pos_cat_next.x = x;
     pos_cat_next.y = y;
 	 printf("cat: (%i, %i)\n", x, y);
-    owner = send_cat();
+    send_cat();
 
     state = CAT_WALKING;
     break;
