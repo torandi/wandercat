@@ -39,7 +39,7 @@ static struct animation_t {
   unsigned int current;
   float delay;
   float s;
-} anim[ANIM_MAX] = {{0}};
+} animation[ANIM_MAX] = {{0}};
 
 animation_t load_anim(const char* filename, unsigned int frames, unsigned int fps){
   animation_t tmp;
@@ -85,53 +85,18 @@ void render_init(int w, int h){
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* load textures */
-  anim[ANIM_WAIVING] = load_anim("data/waving.png", 17, 25);
-  anim[ANIM_WALKING_WEST] = load_anim("data/walk_left.png", 10, 20);
-  anim[ANIM_WALKING_EAST] = load_anim("data/walk_right.png", 10, 20);
+  animation[ANIM_WAIVING] = load_anim("data/waving.png", 17, 25);
+  animation[ANIM_WALKING_WEST] = load_anim("data/walk_left.png", 10, 20);
+  animation[ANIM_WALKING_EAST] = load_anim("data/walk_right.png", 10, 20);
 }
 
-void render(double dt){
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  float x = pos_cat.x;
-  float z = pos_cat.y* 2;
-
-  animation_t* a = NULL;
-
-  switch ( state ){
-  case CAT_WAIVING:
-    a = &anim[ANIM_WAIVING];
-    break;
-
-  case CAT_WALKING:
-    {
-      const pos_t delta = pos_cat_next - pos_cat;
-
-      x = (float)delta.x * step + pos_cat.x;
-      z = (float)delta.y * step + pos_cat.y;
-
-      /* left or right? */
-      if ( delta.x > 0 ){
-	a = &anim[ANIM_WALKING_EAST];
-      } else if ( delta.x < 0 ){
-	a = &anim[ANIM_WALKING_WEST];
-      }
-    }
-    break;
-
-  default:
-    fprintf(verbose, "nothing to render\n");
-    //fprintf(verbose, "step: %f\n", step);
-    //render = false;
-    break;
-  }
-
+static void render_cat(animation_t* anim, float x, float z, const double dt){
   glColor4f(1,1,1,1);
 
-  if ( a ){
-    a->texture->bind();
-    const unsigned int index = (int)(a->s * a->frames);
-    Texture::texcoord_t tc = a->texture->index_to_texcoord(index);
+  if ( anim ){
+    anim->texture->bind();
+    const unsigned int index = (int)(anim->s * anim->frames);
+    Texture::texcoord_t tc = anim->texture->index_to_texcoord(index);
     vertices[ 0] = tc.a[0];
     vertices[ 1] = 1-tc.a[1];
     vertices[ 5] = tc.b[0];
@@ -140,7 +105,7 @@ void render(double dt){
     vertices[11] = 1-tc.c[1];
     vertices[15] = tc.d[0];
     vertices[16] = 1-tc.d[1];
-    a->s = fmod(a->s + dt, a->delay * a->frames);
+    anim->s = fmod(anim->s + dt, anim->delay * anim->frames);
   }
 
   /* render cat */
@@ -154,8 +119,53 @@ void render(double dt){
   }
   glPopMatrix();
 
-  if ( a ){
-    a->texture->unbind();
+  if ( anim ){
+    anim->texture->unbind();
+  }
+}
+
+void render(double dt){
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  float x = pos_cat.x;
+  float z = pos_cat.y* 2;
+  bool render = true;
+
+  animation_t* anim = NULL;
+
+  switch ( state ){
+  case CAT_WAIVING:
+  case CAT_IDLE:
+    anim = &animation[ANIM_WAIVING];
+    break;
+
+  case CAT_WALKING:
+    {
+      const pos_t delta = pos_cat_next - pos_cat;
+
+      x = (float)delta.x * step + pos_cat.x;
+      z = (float)delta.y * step + pos_cat.y;
+
+      /* left or right? */
+      if ( delta.x > 0 ){
+	anim = &animation[ANIM_WALKING_EAST];
+      } else if ( delta.x < 0 ){
+	anim = &animation[ANIM_WALKING_WEST];
+      }
+    }
+    break;
+
+  case CAT_FROBNICATING:
+    render = false;
+    break;
+
+  default:
+    printf("default\n");
+    break;
+  }
+
+  if ( render ){
+    render_cat(anim, x, z, dt);
   }
 
 #ifdef VSYNC
