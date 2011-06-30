@@ -4,7 +4,6 @@
 
 #include <time.h>
 #include <unistd.h>
-#include <GL/gl.h>
 #include <SDL/SDL.h>
 
 #define REF_FPS 30
@@ -17,10 +16,7 @@ FILE* verbose = NULL;
 bool owner;
 
 static void setup(int w, int h){
-  SDL_Init(SDL_INIT_VIDEO);
-  SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_DOUBLEBUF);
-
-  glClearColor(1,0,1,1);
+  render_init(w, h);
 }
 
 static void cleanup(){

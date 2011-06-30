@@ -60,6 +60,10 @@ void logic(struct timespec time, double dt){
     break;
 
   case CAT_FROBNICATING:
+    if ( !owner ){
+      fprintf(stderr, "omg wtf? not owner but frobnicating\n");
+      exit(1);
+    }
     fprintf(verbose, "state: FROBNICATING\n");
     state = CAT_WALKING;
     break;
