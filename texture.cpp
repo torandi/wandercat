@@ -70,7 +70,7 @@ void Texture::load_texture() {
 	/* Load image using SDL Image */
 	SDL_Surface* surface = IMG_Load(_filename);
 	if ( !surface ){
-	  fprintf(stderr, "Failed to load texture at %s", _filename);
+	  fprintf(stderr, "Failed to load texture at %s\n", _filename);
 	  exit(1);
 	}
 
@@ -98,7 +98,7 @@ void Texture::load_texture() {
 	);
 
 	if ( !rgba_surface ) {
-	  fprintf(stderr, "Failed to create RGBA surface");
+	  fprintf(stderr, "Failed to create RGBA surface\n");
 	  exit(1);
 	}
 
