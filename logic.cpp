@@ -1,5 +1,6 @@
 #include "logic.h"
 #include "common.h"
+#include "network.h"
 #include <time.h>
 #include <cstdio>
 #include <cstdlib>
@@ -100,6 +101,7 @@ void logic(struct timespec time, double dt){
 
     pos_cat_next.x = x;
     pos_cat_next.y = y;
+    owner = send_cat();
 
     state = CAT_WALKING;
     break;

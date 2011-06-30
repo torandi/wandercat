@@ -55,6 +55,8 @@ int main(int argc, const char* argv[]){
     exit(1);
   }
 
+  srand((unsigned int)time(NULL));
+
   /* store position */
   pos_self.x = read_val(argv[1], GRID_WIDTH);
   pos_self.y = read_val(argv[2], GRID_HEIGHT);
