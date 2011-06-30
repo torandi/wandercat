@@ -4,6 +4,7 @@
 #include <GL/glxew.h>
 #include <GL/gl.h>
 #include <SDL/SDL.h>
+#include "texture.h"
 
 static const unsigned int num_vertices = 4;
 static const float vertices[2*num_vertices + 3*num_vertices] = {
@@ -20,6 +21,17 @@ static struct {
   float w;
   float h;
 } window;
+
+enum {
+  ANIM_WALKING_EAST,
+  ANIM_WALKING_WEST,
+  ANIM_WALKING_NORTH,
+  ANIM_WALKING_SOUTH,
+  ANIM_WAIVING,
+ 
+  ANIM_MAX
+};
+Texture* anim[ANIM_MAX] = {0,};
 
 void render_init(int w, int h){
   /* create window */
@@ -40,6 +52,8 @@ void render_init(int w, int h){
 
   /* setup opengl */
   glClearColor(1,0,1,1);
+
+  /* load textures */
 }
 
 void render(double dt){

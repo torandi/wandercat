@@ -7,6 +7,11 @@
 #include <unistd.h>
 #include <SDL/SDL.h>
 
+#ifdef HAVE_FAM
+#       include <fam.h>
+#endif /* HAVE_FAM */
+
+
 #define REF_FPS 30
 #define REF_DT (1.0/REF_FPS)
 
@@ -18,7 +23,20 @@ float step = 0.0f;
 FILE* verbose = NULL;
 bool owner;
 
+#ifdef HAVE_FAM
+static FAMConnection _fam_connection;
+FAMConnection* fam_connection(){
+  return &_fam_connection;
+}
+#endif /* HAVE_FAM */
+
 static void setup(int w, int h){
+#ifdef HAVE_FAM
+  if ( FAMOpen(&_fam_connection) < 0 ){
+    fprintf(stderr, "Failed to open FAM connection\n");
+  }
+#endif /* HAVE_FAM */
+
   render_init(w, h);
   init_network();
 }

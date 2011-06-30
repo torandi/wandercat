@@ -1,6 +1,6 @@
-OBJS = main.o render.o logic.o network.o
+OBJS = main.o render.o logic.o network.o texture.o resource.o
 CFLAGS += -Wall `sdl-config --cflags`
-LDFLAGS += `sdl-config --libs`  -lGL -lGLEW
+LDFLAGS += `sdl-config --libs` -lSDL_image -lGL -lGLEW -lfam
 
 all: wandercat
 
