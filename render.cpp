@@ -7,6 +7,8 @@
 #include "texture.h"
 #include <math.h>
 
+static const float XSCALE = 2.5;
+
 static const unsigned int num_vertices = 4;
 static float vertices[2*num_vertices + 3*num_vertices] = {
   0, 1,   -0.5f, -0.5f, 0.0f,
@@ -67,8 +69,8 @@ void render_init(int w, int h){
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(pos_self.x * 3, pos_self.y, 2,
-  	    pos_self.x * 3, pos_self.y, 0,
+  gluLookAt(pos_self.x * XSCALE, pos_self.y, 2,
+  	    pos_self.x * XSCALE, pos_self.y, 0,
   	    0, 1, 0);
   glViewport(0, 0, w, h);
 
@@ -112,7 +114,7 @@ static void render_cat(animation_t* anim, float x, float z, const double dt){
   glPushMatrix();
   {
     //printf("%f\n", x);
-    glTranslatef(x * 3, 0.0, z);
+    glTranslatef(x * XSCALE, 0.0, z);
     //glScalef(size, size, 1.0);
     glInterleavedArrays(GL_T2F_V3F, sizeof(float)*5, vertices);
     glDrawArrays(GL_QUADS, 0, num_vertices);
@@ -128,7 +130,7 @@ void render(double dt){
   glClear(GL_COLOR_BUFFER_BIT);
 
   float x = pos_cat.x;
-  float z = pos_cat.y* 2;
+  float z = pos_cat.y;
   bool render = true;
 
   animation_t* anim = NULL;
