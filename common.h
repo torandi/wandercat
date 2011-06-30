@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <stdint.h>
 
-#define GRID_WIDTH 1
+#define GRID_WIDTH 2
 #define GRID_HEIGHT 2
 
 #define WALK_TIME 3
