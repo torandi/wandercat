@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+#define GRID_WIDTH 10
+#define GRID_HEIGHT 10
+
 typedef struct {
   uint16_t x;
   uint16_t y;

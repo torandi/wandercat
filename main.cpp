@@ -35,7 +35,27 @@ static void poll(bool* run){
   }
 }
 
+static uint16_t read_val(const char* str, int max){
+  const int v = atoi(str);
+  if ( v < 0 || v > max ){
+    fprintf(stderr, "invalid grid value\n");
+    exit(1);
+  }
+  return v - 1;
+}
+
 int main(int argc, const char* argv[]){
+  if ( argc != 3 ){
+    fprintf(stderr, "usage: wandercat X Y\n");
+    fprintf(stderr, "  where X is between 1 and %d\n", GRID_WIDTH);
+    fprintf(stderr, "        Y is between 1 and %d\n", GRID_HEIGHT);
+    exit(1);
+  }
+
+  /* store position */
+  pos_self.x = read_val(argv[1], GRID_WIDTH);
+  pos_self.y = read_val(argv[2], GRID_HEIGHT);
+
   setup(800, 600);
   
   bool run = true;
