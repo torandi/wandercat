@@ -1,5 +1,7 @@
 #include "render.h"
 #include "common.h"
+#include <GL/glew.h>
+#include <GL/glxew.h>
 #include <GL/gl.h>
 #include <SDL/SDL.h>
 
@@ -23,6 +25,7 @@ void render_init(int w, int h){
   /* create window */
   SDL_Init(SDL_INIT_VIDEO);
   SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_DOUBLEBUF);
+  glewInit();
 
   /* orthographic projection */
   glOrtho(0, w, 0, h, -1.0, 1.0);
@@ -133,6 +136,12 @@ void render(double dt){
     }
     glPopMatrix();
   }
+
+#ifdef VSYNC
+  unsigned int retraceCount;
+  glXGetVideoSyncSGI(&retraceCount);
+  glXWaitVideoSyncSGI(2, (retraceCount+1)%2, &retraceCount);
+#endif
 
   SDL_GL_SwapBuffers();
 }
