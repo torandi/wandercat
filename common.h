@@ -11,8 +11,20 @@
 #define WAIVE_TIME 1
 
 struct pos_t {
-  uint16_t x;
-  uint16_t y;
+  int16_t x;
+  int16_t y;
+
+  pos_t()
+  : x(0)
+  , y(0){
+
+  }
+
+  pos_t(int16_t x, int16_t y)
+  : x(x)
+  , y(y){
+
+  }
 
   bool operator==(const pos_t &other) const {
 		return (x == other.x && y == other.y);
@@ -20,6 +32,10 @@ struct pos_t {
 
   bool operator!=(const pos_t &other) const {
 		return !(*this == other);
+  }
+
+  pos_t operator-(const pos_t& rhs) const {
+    return pos_t(x - rhs.x, y - rhs.y);
   }
 };
 
