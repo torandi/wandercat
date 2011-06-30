@@ -200,7 +200,9 @@ void render(double dt){
     }
     glPopMatrix();
 
-    a->texture->unbind();
+    if ( a ){
+      a->texture->unbind();
+    }
   }
 
 #ifdef VSYNC
