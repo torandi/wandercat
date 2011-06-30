@@ -120,7 +120,6 @@ void render(double dt){
     fprintf(verbose, "nothing to render\n");
     fprintf(verbose, "step: %f\n", step);
     render = false;
-    return;
   }
 
   if ( render ){
