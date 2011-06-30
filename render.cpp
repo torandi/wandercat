@@ -5,9 +5,10 @@
 #include <GL/gl.h>
 #include <SDL/SDL.h>
 #include "texture.h"
+#include <math.h>
 
 static const unsigned int num_vertices = 4;
-static const float vertices[2*num_vertices + 3*num_vertices] = {
+static float vertices[2*num_vertices + 3*num_vertices] = {
   0, 1,   0.0f, 0.0f, 0.0f,
   0, 0,   0.0f, 1.0f, 0.0f,
   1, 0,   1.0f, 1.0f, 0.0f,
@@ -31,7 +32,24 @@ enum {
  
   ANIM_MAX
 };
-Texture* anim[ANIM_MAX] = {0,};
+
+static struct animation_t {
+  Texture* texture;
+  unsigned int frames;
+  unsigned int current;
+  float delay;
+  float s;
+} anim[ANIM_MAX] = {{0}};
+
+animation_t load_anim(const char* filename, unsigned int frames, unsigned int fps){
+  animation_t tmp;
+  tmp.texture = new Texture(filename, frames);
+  tmp.frames = frames;
+  tmp.current = 0;
+  tmp.delay = 1.0f / fps;
+  tmp.s = 0.0f;
+  return tmp;
+}
 
 void render_init(int w, int h){
   /* create window */
@@ -52,8 +70,12 @@ void render_init(int w, int h){
 
   /* setup opengl */
   glClearColor(1,0,1,1);
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* load textures */
+  anim[ANIM_WAIVING] = load_anim("data/waving.png", 17, 25);
 }
 
 void render(double dt){
@@ -136,9 +158,25 @@ void render(double dt){
     render = false;
   }
 
+  animation_t& a = anim[ANIM_WAIVING];
+
   if ( render ){
     glColor4f(1,1,1,1);
-    
+
+    a.texture->bind();
+    const unsigned int index = (int)(a.s * a.frames);
+    Texture::texcoord_t tc = a.texture->index_to_texcoord(index);
+    vertices[ 0] = tc.a[0];
+    vertices[ 1] = tc.a[1];
+    vertices[ 5] = tc.b[0];
+    vertices[ 6] = tc.b[1];
+    vertices[10] = tc.c[0];
+    vertices[11] = tc.c[1];
+    vertices[15] = tc.d[0];
+    vertices[16] = tc.d[1];
+    a.s = fmod(a.s + dt, a.delay * a.frames);
+    printf("s: %f\n", a.s);
+
     /* render cat */
     glPushMatrix();
     {
