@@ -64,17 +64,8 @@ void logic(struct timespec time, double dt){
       break;
     }
 
-    /* If we still own the cat at this stage, it means there weren't any client
-     * connected at that grid position, thus we should keep the "token" and have
-     * the cat keep walking. */
-    if ( owner ){
-      pos_cat = pos_cat_next;
-      set_state(CAT_WAIVING, time);
-      break;
-    }
-
-    /* wait until the cat enters our screen */
-    set_state(CAT_IDLE, time);
+    pos_cat = pos_cat_next;
+    set_state(CAT_WAIVING, time);
     break;
 
   case CAT_WAIVING:
@@ -87,17 +78,10 @@ void logic(struct timespec time, double dt){
       if ( owner ){
 	set_state(CAT_FROBNICATING, time);
       } else {
-	set_state(CAT_IDLE, time);
+	set_state(CAT_WALKING, time);
       }
     }
 
-    break;
-
-  case CAT_IDLE:
-    fprintf(verbose, "state: IDLE\n");
-    if ( owner ){
-      set_state(CAT_WALKING, time);
-    }
     break;
 
   case CAT_FROBNICATING:

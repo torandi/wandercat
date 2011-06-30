@@ -137,7 +137,7 @@ void render(double dt){
 
   switch ( state ){
   case CAT_WAIVING:
-  case CAT_IDLE:
+    //case CAT_IDLE:
     anim = &animation[ANIM_WAIVING];
     break;
 
