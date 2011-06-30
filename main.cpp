@@ -10,8 +10,10 @@
 #define REF_FPS 30
 #define REF_DT (1.0/REF_FPS)
 
-pos_t pos_cat;
-pos_t pos_self;
+pos_t pos_cat = {0,0};
+pos_t pos_self = {0,0};
+float step = 0.0f;
+FILE* verbose = NULL;
 bool owner;
 
 static void setup(int w, int h){
@@ -64,6 +66,13 @@ int main(int argc, const char* argv[]){
     pos_cat = pos_self;
   }
 
+  /* verbose dst */
+#if 1
+  verbose = stdout;
+#else
+  verbose = fopen("/dev/null");
+#endif
+
   setup(800, 600);
   
   bool run = true;
@@ -81,7 +90,7 @@ int main(int argc, const char* argv[]){
 
     /* do stuff */
     poll(&run);
-    logic(dt);
+    logic(ts, dt);
     render(dt);
     
     /* framelimiter */
