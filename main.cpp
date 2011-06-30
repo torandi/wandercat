@@ -1,3 +1,4 @@
+/* -*- tab-width: 4 -*- */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -71,21 +72,29 @@ static uint16_t read_val(const char* str, int max){
   return v - 1;
 }
 
+static void show_usage(){
+  fprintf(stderr, "usage: wandercat [options] X Y\n");
+  fprintf(stderr, "  where X is between 1 and %d\n", GRID_WIDTH);
+  fprintf(stderr, "        Y is between 1 and %d\n", GRID_HEIGHT);
+  fprintf(stderr, "\n");
+  fprintf(stderr, "  -s, --spawn     Have this client spawn the cat.\n");
+  fprintf(stderr, "  -p, --port=PORT Use PORT for communication.\n");
+  fprintf(stderr, "  -h, --help      This help text.\n");
+}
+
 int main(int argc, char* argv[]){
   static struct option long_options[] =
   {
 		{"spawn", no_argument, 0, 's' },
-		{"port", required_argument, 0, 'p' }
+		{"port", required_argument, 0, 'p' },
+		{"help", no_argument, 0, 'h'},
+		{0, 0, 0, 0}
   };
 
   int option_index = 0;
   int c;
 
-  while(1) {
-  	c = getopt_long(argc, argv, "sp:", long_options, &option_index);
-	if(c == -1)
-		break;
-
+  while( (c=getopt_long(argc, argv, "sp:h", long_options, &option_index)) != -1 ) {
 	switch(c) {
 		case 0:
 			break;
@@ -96,15 +105,16 @@ int main(int argc, char* argv[]){
 			port = atoi(optarg);
 			printf("Set port to %i\n", port);
 			break;
+		case 'h':
+			show_usage();
+			exit(0);
 		default:
 			break;
 	}
   }
 
   if ( argc - optind != 2 ){
-    fprintf(stderr, "usage: wandercat [options] X Y\n");
-    fprintf(stderr, "  where X is between 1 and %d\n", GRID_WIDTH);
-    fprintf(stderr, "        Y is between 1 and %d\n", GRID_HEIGHT);
+	show_usage();
     exit(1);
   }
 
