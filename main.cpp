@@ -15,10 +15,10 @@
 #define REF_FPS 30
 #define REF_DT (1.0/REF_FPS)
 
-pos_t pos_cat_prev = {0,0};
-pos_t pos_cat = {0,0};
-pos_t pos_cat_next = {0,0};
-pos_t pos_self = {0,0};
+pos_t pos_cat_prev(0,0);
+pos_t pos_cat(0,0);
+pos_t pos_cat_next(0,0);
+pos_t pos_self(0,0);
 float step = 0.0f;
 FILE* verbose = NULL;
 bool owner;

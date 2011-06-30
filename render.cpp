@@ -76,6 +76,8 @@ void render_init(int w, int h){
 
   /* load textures */
   anim[ANIM_WAIVING] = load_anim("data/waving.png", 17, 25);
+  anim[ANIM_WALKING_WEST] = load_anim("data/walk_left.png", 10, 20);
+  anim[ANIM_WALKING_EAST] = load_anim("data/walk_right.png", 10, 20);
 }
 
 void render(double dt){
@@ -85,6 +87,8 @@ void render(double dt){
   float y;
   float size;
   bool render = true;
+
+  animation_t* a = NULL;
 
   switch ( state ){
   case CAT_WAIVING:
@@ -98,10 +102,13 @@ void render(double dt){
     size = 512;
     x = center.x - size * 0.5f;
     y = center.y - size * 0.5f;
+    a = &anim[ANIM_WAIVING];
     break;
 
   case CAT_WALKING:
     {
+      const pos_t delta = pos_cat_next - pos_cat;
+
       enum {
 	ENTER,
 	EXIT,
@@ -149,6 +156,13 @@ void render(double dt){
 	x -= window.w * sinv * 2.0 * dx;
 	y += window.h * sinv * 2.0 * dy;
       }
+
+      /* left or right? */
+      if ( delta.x > 0 ){
+	a = &anim[ANIM_WALKING_EAST];
+      } else if ( delta.x < 0 ){
+	a = &anim[ANIM_WALKING_WEST];
+      }
     }
     break;
 
@@ -158,24 +172,23 @@ void render(double dt){
     render = false;
   }
 
-  animation_t& a = anim[ANIM_WAIVING];
-
   if ( render ){
     glColor4f(1,1,1,1);
 
-    a.texture->bind();
-    const unsigned int index = (int)(a.s * a.frames);
-    Texture::texcoord_t tc = a.texture->index_to_texcoord(index);
-    vertices[ 0] = tc.a[0];
-    vertices[ 1] = tc.a[1];
-    vertices[ 5] = tc.b[0];
-    vertices[ 6] = tc.b[1];
-    vertices[10] = tc.c[0];
-    vertices[11] = tc.c[1];
-    vertices[15] = tc.d[0];
-    vertices[16] = tc.d[1];
-    a.s = fmod(a.s + dt, a.delay * a.frames);
-    printf("s: %f\n", a.s);
+    if ( a ){
+      a->texture->bind();
+      const unsigned int index = (int)(a->s * a->frames);
+      Texture::texcoord_t tc = a->texture->index_to_texcoord(index);
+      vertices[ 0] = tc.a[0];
+      vertices[ 1] = tc.a[1];
+      vertices[ 5] = tc.b[0];
+      vertices[ 6] = tc.b[1];
+      vertices[10] = tc.c[0];
+      vertices[11] = tc.c[1];
+      vertices[15] = tc.d[0];
+      vertices[16] = tc.d[1];
+      a->s = fmod(a->s + dt, a->delay * a->frames);
+    }
 
     /* render cat */
     glPushMatrix();
@@ -186,6 +199,8 @@ void render(double dt){
       glDrawArrays(GL_QUADS, 0, num_vertices);
     }
     glPopMatrix();
+
+    a->texture->unbind();
   }
 
 #ifdef VSYNC
