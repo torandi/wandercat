@@ -130,7 +130,7 @@ int main(int argc, char* argv[]){
     owner = true;
     pos_cat = pos_self;
 	 pos_cat_prev = pos_cat;
-	 --pos_cat_prev.x;
+	 ++pos_cat_prev.x;
   }
 
   /* verbose dst */

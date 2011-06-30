@@ -79,7 +79,6 @@ enum state_t {
   CAT_FRIST,
   CAT_WALKING,
   CAT_WAIVING,
-  CAT_IDLE,
   CAT_FROBNICATING,
   CAT_TEAPOT,
 };
