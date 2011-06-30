@@ -26,6 +26,7 @@ pos_t pos_cat(0,0);
 pos_t pos_cat_next(0,0);
 pos_t pos_self(0,0);
 float step = 0.0f;
+int verbose_flag = 0;
 FILE* verbose = NULL;
 bool owner;
 int port = PORT;
@@ -79,22 +80,24 @@ static void show_usage(){
   fprintf(stderr, "\n");
   fprintf(stderr, "  -s, --spawn     Have this client spawn the cat.\n");
   fprintf(stderr, "  -p, --port=PORT Use PORT for communication.\n");
+  fprintf(stderr, "  -v, --verbose   Verbose output.\n");
   fprintf(stderr, "  -h, --help      This help text.\n");
 }
 
 int main(int argc, char* argv[]){
   static struct option long_options[] =
   {
-		{"spawn", no_argument, 0, 's' },
-		{"port", required_argument, 0, 'p' },
-		{"help", no_argument, 0, 'h'},
+		{"spawn",   no_argument,       0, 's' },
+		{"port",    required_argument, 0, 'p' },
+		{"help",    no_argument,       0, 'h'},
+		{"verbose", no_argument, &verbose_flag, 1},
 		{0, 0, 0, 0}
   };
 
   int option_index = 0;
   int c;
 
-  while( (c=getopt_long(argc, argv, "sp:h", long_options, &option_index)) != -1 ) {
+  while( (c=getopt_long(argc, argv, "sp:hv", long_options, &option_index)) != -1 ) {
 	switch(c) {
 		case 0:
 			break;
@@ -108,6 +111,9 @@ int main(int argc, char* argv[]){
 		case 'h':
 			show_usage();
 			exit(0);
+		case 'v':
+			verbose_flag = 1;
+			break;
 		default:
 			break;
 	}
@@ -134,11 +140,11 @@ int main(int argc, char* argv[]){
   }
 
   /* verbose dst */
-#ifdef EXT_VERBOSE
-  verbose = stdout;
-#else
-  verbose = fopen("/dev/null","w");
-#endif
+  if ( verbose_flag ){
+	  verbose = stdout;
+  } else {
+	  verbose = fopen("/dev/null","w");
+  }
 
   setup(800, 600);
   
