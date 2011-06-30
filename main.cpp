@@ -1,6 +1,7 @@
 #include "common.h"
 #include "render.h"
 #include "logic.h"
+#include "network.h"
 
 #include <time.h>
 #include <unistd.h>
@@ -9,6 +10,7 @@
 #define REF_FPS 30
 #define REF_DT (1.0/REF_FPS)
 
+pos_t pos_cat_prev = {0,0};
 pos_t pos_cat = {0,0};
 pos_t pos_cat_next = {0,0};
 pos_t pos_self = {0,0};
@@ -18,6 +20,7 @@ bool owner;
 
 static void setup(int w, int h){
   render_init(w, h);
+  init_network();
 }
 
 static void cleanup(){
@@ -64,10 +67,10 @@ int main(int argc, const char* argv[]){
   }
 
   /* verbose dst */
-#if 1
+#ifdef EXT_VERBOSE
   verbose = stdout;
 #else
-  verbose = fopen("/dev/null");
+  verbose = fopen("/dev/null","w");
 #endif
 
   setup(800, 600);
@@ -87,9 +90,10 @@ int main(int argc, const char* argv[]){
 
     /* do stuff */
     poll(&run);
+	 network();
     logic(ts, dt);
-    render(dt);
-    
+	 render(dt);
+		 
     /* framelimiter */
     const int delay = (REF_DT - dt) * 1000000;
     if ( delay > 0 ){
