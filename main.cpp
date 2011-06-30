@@ -45,7 +45,7 @@ static uint16_t read_val(const char* str, int max){
 }
 
 int main(int argc, const char* argv[]){
-  if ( argc != 3 ){
+  if ( argc < 3 ){
     fprintf(stderr, "usage: wandercat X Y\n");
     fprintf(stderr, "  where X is between 1 and %d\n", GRID_WIDTH);
     fprintf(stderr, "        Y is between 1 and %d\n", GRID_HEIGHT);
@@ -55,6 +55,13 @@ int main(int argc, const char* argv[]){
   /* store position */
   pos_self.x = read_val(argv[1], GRID_WIDTH);
   pos_self.y = read_val(argv[2], GRID_HEIGHT);
+
+  /* start cat? */
+  const bool start = argc >= 4;
+  if ( start ){
+    fprintf(stderr, "Spawning cat at %d %d\n", pos_self.x+1, pos_self.y+1);
+    pos_cat = pos_self;
+  }
 
   setup(800, 600);
   
