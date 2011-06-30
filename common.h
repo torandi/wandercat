@@ -4,8 +4,8 @@
 #include <cstdio>
 #include <stdint.h>
 
-#define GRID_WIDTH 2
-#define GRID_HEIGHT 1
+#define GRID_WIDTH 4
+#define GRID_HEIGHT 4
 
 #define WALK_TIME 3
 #define WAIVE_TIME 1
@@ -69,6 +69,11 @@ extern bool owner;
  * 0.0 -> 1.0
  */
 extern float step;
+
+/**
+ * Port to broadcast on
+ */
+extern int port;
 
 enum state_t {
   CAT_FRIST,

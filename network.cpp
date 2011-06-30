@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -54,7 +50,7 @@ void init_network() {
 	fcntl(sockfd,F_SETFL,x | O_NONBLOCK);
 
 	broadcast_addr.sin_family = AF_INET;
-	broadcast_addr.sin_port = htons(PORT);
+	broadcast_addr.sin_port = htons(port);
 	broadcast_addr.sin_addr.s_addr = htonl(INADDR_BROADCAST);	
 
 	if(bind(sockfd, (sockaddr *) &broadcast_addr, sizeof(sockaddr_in)) < 0) {
@@ -79,30 +75,28 @@ void network() {
 	tv.tv_usec = 0;
 
 	if(select(sockfd+1,&readset,NULL,NULL,&tv) > 0) {
-		printf("revc-eou\n");
 		size = recvfrom(sockfd, buffer, 1024, 0, &src_addr, &addrlen);
-		printf("Got data: %s\n", buffer);
 		if(size >= 3) {
 			if(CMD("mov")) {
-				sscanf(buffer,"mov %hu %hu %hu %hu",&pos_cat.x, &pos_cat.y, &pos_cat_next.x, &pos_cat_next.y);
-				printf("Cat moved (%hu, %hu) -> (%hu, %hu)\n", pos_cat.x+1, pos_cat.y+1, pos_cat_next.x+1, pos_cat_next.y+1);
+				sscanf(buffer,"mov %hi %hi %hi %hi",&pos_cat.x, &pos_cat.y, &pos_cat_next.x, &pos_cat_next.y);
+				printf("Cat moved (%hi, %hi) -> (%hi, %hi)\n", pos_cat.x+1, pos_cat.y+1, pos_cat_next.x+1, pos_cat_next.y+1);
 
 				if(pos_cat_next == pos_self) {
 					printf("Assuming ownership of cat\n");
 					//Ack server
-					sprintf(buffer, "ack %hu %hu",pos_self.x, pos_self.y);
+					sprintf(buffer, "ack %hi %hi",pos_self.x, pos_self.y);
 					//sendto(sockfd, buffer, strlen(buffer)+1, 0, (sockaddr*) &src_addr, addrlen);
 					sendto(sockfd, buffer, strlen(buffer)+1, 0, (sockaddr*) &broadcast_addr, sizeof(sockaddr_in));
 					owner = true;
 				}
 			} else if(CMD("ack")) {
 				pos_t pos;
-				sscanf(buffer,"ack %hu %hu", &pos.x, &pos.y);
+				sscanf(buffer,"ack %hi %hi", &pos.x, &pos.y);
 				if(pos == pos_cat_next && pos != pos_self) {
 					printf("We lost the cat!\n");
 					owner = false;
 				} else if(pos != pos_self) {
-					printf("Recieved old ack: (%hu, %hu)\n", pos.x+1, pos.y+1);
+					printf("Recieved old ack: (%hi, %hi)\n", pos.x+1, pos.y+1);
 				}
 
 			}
@@ -113,38 +107,9 @@ void network() {
 	}
 }
 
-/** 
- * Returns the value owner should be set to
- */ 
-bool send_cat() {
+void send_cat() {
 	char buffer[1024];
-	sprintf(buffer, "mov %hu %hu %hu %hu",pos_cat.x, pos_cat.y, pos_cat_next.x, pos_cat_next.y);
+	sprintf(buffer, "mov %hi %hi %hi %hi",pos_cat.x, pos_cat.y, pos_cat_next.x, pos_cat_next.y);
 	sendto(sockfd, buffer, strlen(buffer)+1, 0, (sockaddr*) &broadcast_addr, sizeof(sockaddr_in));
 	printf("Sending cat: %s\n", buffer);
-/*
-	size_t size;
-	FD_ZERO(&readset);
-	FD_SET(sockfd,&readset);
-
-	//Wait 1 sec and see if anybody acks
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
-	printf("Waiting for ack...\n");
-	if(select(sockfd +1, &readset, NULL, NULL, &tv) > 0) {
-		size = recvfrom(sockfd, buffer, 1024, 0, NULL, NULL); 
-		if(size >=3) {
-			if(CMD("ack")) {
-				printf("We lost the cat!\n");
-				//Someone took over the cat
-				return false;
-			}
-		} else {
-			buffer[size] = 0;
-			printf("Got garbage: %s.", buffer);
-		}
-	}
-	printf("No ack\n");
-	*/
-	//We keep the cat - great success
-	return true;
 }

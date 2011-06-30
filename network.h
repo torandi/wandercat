@@ -3,6 +3,6 @@
 
 	void network();
 	void init_network();
-	bool send_cat();
+	void send_cat();
 
 #endif
