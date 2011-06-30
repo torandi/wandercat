@@ -75,9 +75,7 @@ void network() {
 	tv.tv_usec = 0;
 
 	if(select(sockfd+1,&readset,NULL,NULL,&tv) > 0) {
-		printf("revc-eou\n");
 		size = recvfrom(sockfd, buffer, 1024, 0, &src_addr, &addrlen);
-		printf("Got data: %s\n", buffer);
 		if(size >= 3) {
 			if(CMD("mov")) {
 				sscanf(buffer,"mov %hu %hu %hu %hu",&pos_cat.x, &pos_cat.y, &pos_cat_next.x, &pos_cat_next.y);
