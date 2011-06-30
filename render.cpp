@@ -158,6 +158,7 @@ void render(double dt){
     break;
 
   case CAT_FROBNICATING:
+  case CAT_FRIST:
     render = false;
     break;
 

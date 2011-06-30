@@ -151,7 +151,6 @@ void logic(struct timespec time, double dt){
 	    } else {
 		state = CAT_WAIVING;
 	    }
-
 	}
 
 	break;
