@@ -7,11 +7,14 @@
 #include "common.h"
 #include "network.h"
 
-static struct package_t {
-	char domain;
-	pos_t from;
-	pos_t to;
-}
+#define CMD(str) strncmp(buffer,3,str) == 0
+
+/**
+ * Protocol:
+ * [3 chars cmd][space][optional parameters]
+ * Cmds:
+ * mov from_x from_y to_x to_y
+ */
 
 static struct sockaddr_in relay_addr;
 static int sockfd;
@@ -48,9 +51,35 @@ void init_network() {
 	tv.tv_usec = 0;
 }
 
+/**
+ * Handles network traffic.
+ */
 void network() {
-	package_t pkg;
+	char buffer[1024];
+	int size;
+	struct sockaddr src_addr;
+	socklen_t addrlen;
+
 	if(select(sockfd+1,&readset,NULL,NULL,&tv) > 0) {
-		recvfrom(sockfd, &pkg, sizeof(package_t), 0, NULL, NULL);
+		size = recvfrom(sockfd, buffer, 1024, 0, &src_addr, &addrlen);
+		if(size >= 3) {
+			if(CMD("mov")) {
+				int16_t from_x, from_y, to_x, to_y;
+				sscanf(buffer+4,"%i %i %i %i",&from_x,&from_y, &to_x, &to_y);
+				pos_cat.x = ntohs(to_x);
+				pos_cat.y = ntohs(to_y);
+				pos_cat_prev.x = ntohs(from_x);
+				pos_cat_prev.y = ntohs(from_y);
+
+				if(pos_cat == pos_self) {
+					//Ack server
+					sendto(sockfd, "ack", 3, 0, (sockaddr*) &broadcast_addr, sizeof(struct sockaddr_in));
+					owner = true;
+				}
+			}
+		} else {
+			fprintf(stderr,"Recieved invalid data\n");
+		}
 	}
 }
+

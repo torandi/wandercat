@@ -12,6 +12,7 @@
 
 pos_t pos_cat;
 pos_t pos_self;
+bool owner;
 
 static void setup(int w, int h){
   SDL_Init(SDL_INIT_VIDEO);
