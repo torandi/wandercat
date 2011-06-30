@@ -1,4 +1,13 @@
 *~
 *.o
 *.d
+\#*\#
+build
+build-aux
+Makefile
+Makefile.in
+configure
+config.h.in
 wandercat
+aclocal.m4
+autom4te.cache
