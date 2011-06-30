@@ -60,8 +60,8 @@ int main(int argc, const char* argv[]){
   pos_self.y = read_val(argv[2], GRID_HEIGHT);
 
   /* start cat? */
-  const bool start = argc >= 4;
-  if ( start ){
+  owner = argc >= 4;
+  if ( owner ){
     fprintf(stderr, "Spawning cat at %d %d\n", pos_self.x+1, pos_self.y+1);
     pos_cat = pos_self;
   }

@@ -26,10 +26,10 @@ void logic(struct timespec time, double dt){
     fprintf(verbose, "state: FRIST\n");
     step = 0.0f;
     
-    if ( pos_cat.x == pos_self.x && pos_cat.y == pos_self.y ){
+    if ( owner ){
       set_state(CAT_WAIVING, time);
     } else {
-      set_state(CAT_WAIVING, time);
+      set_state(CAT_IDLE, time);
     }
     
     break;
