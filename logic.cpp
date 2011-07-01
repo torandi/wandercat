@@ -38,7 +38,6 @@ static bool can_do_move(const pos_t &mov) {
 }
 
 void logic(struct timespec time, double dt){
-    fprintf(verbose, "owner: %d\n", owner);
     switch ( state ){
     case CAT_FRIST:
 	fprintf(verbose, "state: FRIST\n");
