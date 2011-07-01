@@ -91,6 +91,8 @@ void render_init(int w, int h){
   animation[ANIM_WAIVING] = load_anim("data/waving.png", 17, 25);
   animation[ANIM_WALKING_WEST] = load_anim("data/walk_left.png", 10, 20);
   animation[ANIM_WALKING_EAST] = load_anim("data/walk_right.png", 10, 20);
+  animation[ANIM_WALKING_NORTH] = load_anim("data/walk_up.png", 16, 20);
+  animation[ANIM_WALKING_SOUTH] = load_anim("data/walk_down.png", 17, 20);
 }
 
 static void render_cat(animation_t* anim, float x, float z, const double dt){
@@ -153,6 +155,10 @@ void render(double dt){
 	anim = &animation[ANIM_WALKING_EAST];
       } else if ( delta.x < 0 ){
 	anim = &animation[ANIM_WALKING_WEST];
+      } else if ( delta.y > 0 ){
+	anim = &animation[ANIM_WALKING_NORTH];
+      } else if ( delta.y < 0 ){
+	anim = &animation[ANIM_WALKING_SOUTH];
       }
     }
     break;
