@@ -44,14 +44,15 @@ void logic(struct timespec time, double dt){
 	fprintf(verbose, "state: FRIST\n");
 	step = 0.0f;
     
+	if ( !frist ){
+	  set_state(CAT_WALKING, time);
+	  break;
+	}
+
 	if ( owner ){
 	    set_state(CAT_WAIVING, time);
 	}
 
-	if ( pos_cat_next.x != 0 || pos_cat_next.y != 0 ){
-	    set_state(CAT_WALKING, time);
-	}
-    
 	break;
 
     case CAT_WALKING:

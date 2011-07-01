@@ -29,6 +29,7 @@ float step = 0.0f;
 int verbose_flag = 0;
 FILE* verbose = NULL;
 bool owner;
+bool frist = true;
 int port = PORT;
 
 #ifdef HAVE_FAM
@@ -79,7 +80,7 @@ static void show_usage(){
   fprintf(stderr, "        Y is between 1 and %d\n", GRID_HEIGHT);
   fprintf(stderr, "\n");
   fprintf(stderr, "  -s, --spawn     Have this client spawn the cat.\n");
-  fprintf(stderr, "  -p, --port=PORT Use PORT for communication.\n");
+  fprintf(stderr, "  -p, --port=PORT Use PORT for communication (default: %d).\n", PORT);
   fprintf(stderr, "  -v, --verbose   Verbose output.\n");
   fprintf(stderr, "  -h, --help      This help text.\n");
 }

@@ -79,7 +79,7 @@ void network() {
 		if(size >= 3) {
 			if(CMD("mov")) {
 				sscanf(buffer,"mov %hi %hi %hi %hi",&pos_cat.x, &pos_cat.y, &pos_cat_next.x, &pos_cat_next.y);
-				printf("Cat moved (%hi, %hi) -> (%hi, %hi)\n", pos_cat.x+1, pos_cat.y+1, pos_cat_next.x+1, pos_cat_next.y+1);
+				printf("Network: cat moved (%hi, %hi) -> (%hi, %hi) [from %s]\n", pos_cat.x+1, pos_cat.y+1, pos_cat_next.x+1, pos_cat_next.y+1, inet_ntoa(((struct sockaddr_in*)&src_addr)->sin_addr));
 
 				if(pos_cat_next == pos_self) {
 					printf("Assuming ownership of cat\n");
@@ -89,6 +89,7 @@ void network() {
 					sendto(sockfd, buffer, strlen(buffer)+1, 0, (sockaddr*) &broadcast_addr, sizeof(sockaddr_in));
 					owner = true;
 				}
+				frist = false;
 			} else if(CMD("ack")) {
 				pos_t pos;
 				sscanf(buffer,"ack %hi %hi", &pos.x, &pos.y);

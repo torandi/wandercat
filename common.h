@@ -64,6 +64,8 @@ extern pos_t pos_self;
  */
 extern bool owner;
 
+extern bool frist;
+
 /**
  * Current animation step.
  * 0.0 -> 1.0
