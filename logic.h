@@ -1,6 +1,6 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
-void logic(struct timespec time, double dt);
+void logic(struct timeval time, double dt);
 
 #endif /* LOGIC_H */

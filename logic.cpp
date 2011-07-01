@@ -7,19 +7,19 @@
 #include <vector>
 
 state_t state = CAT_FRIST;
-static struct timespec ref;
+static struct timeval ref;
 
-static void set_state(enum state_t n, struct timespec time){
+static void set_state(enum state_t n, struct timeval time){
     fprintf(verbose, "changing state to %d\n", n);
     ref = time;
     state = n;
     step = 0.0f;
 }
 
-static double calc_step(struct timespec* ref, struct timespec* time, double max){
-    double dt = (time->tv_sec - ref->tv_sec) * 1000000000.0;
-    dt += time->tv_nsec - ref->tv_nsec;
-    dt /= 1000000000;
+static double calc_step(struct timeval* ref, struct timeval* time, double max){
+    double dt = (time->tv_sec - ref->tv_sec) * 1000000.0;
+    dt += time->tv_usec - ref->tv_usec;
+    dt /= 1000000;
     return dt / max;
 }
 
@@ -37,7 +37,7 @@ static bool can_do_move(const pos_t &mov) {
     return true;
 }
 
-void logic(struct timespec time, double dt){
+void logic(struct timeval time, double dt){
     switch ( state ){
     case CAT_FRIST:
 	fprintf(verbose, "state: FRIST\n");

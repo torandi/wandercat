@@ -9,6 +9,7 @@
 #include "network.h"
 
 #include <time.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <SDL/SDL.h>
 #include <getopt.h>
@@ -150,17 +151,17 @@ int main(int argc, char* argv[]){
   setup(800, 600);
   
   bool run = true;
-  struct timespec ref;
-  clock_gettime(CLOCK_REALTIME, &ref);
+  struct timeval ref;
+  gettimeofday(&ref, NULL);
 
   while ( run ){
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
+    struct timeval ts;
+	gettimeofday(&ref, NULL);
 
     /* calculate dt */
-    double dt = (ts.tv_sec - ref.tv_sec) * 1000000000.0;
-    dt += ts.tv_nsec - ref.tv_nsec;
-    dt /= 1000000000;
+    double dt = (ts.tv_sec - ref.tv_sec) * 1000000.0;
+    dt += ts.tv_usec - ref.tv_usec;
+    dt /= 1000000;
 
     /* do stuff */
     poll(&run);
