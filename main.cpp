@@ -170,7 +170,7 @@ int main(int argc, char* argv[]){
 
   while ( run ){
     struct timeval ts;
-	gettimeofday(&ref, NULL);
+	gettimeofday(&ts, NULL);
 
     /* calculate dt */
     double dt = (ts.tv_sec - ref.tv_sec) * 1000000.0;
