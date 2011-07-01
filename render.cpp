@@ -8,6 +8,7 @@
 #include <math.h>
 
 static const float XSCALE = 2.5;
+static const float ZSCALE = 5.0;
 
 static const unsigned int num_vertices = 4;
 static float vertices[2*num_vertices + 3*num_vertices] = {
@@ -69,8 +70,8 @@ void render_init(int w, int h){
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(pos_self.x * XSCALE, pos_self.y, 2,
-  	    pos_self.x * XSCALE, pos_self.y, 0,
+  gluLookAt(pos_self.x * XSCALE, pos_self.y * ZSCALE, 2,
+  	    pos_self.x * XSCALE, pos_self.y * ZSCALE, 0,
   	    0, 1, 0);
   glViewport(0, 0, w, h);
 
@@ -113,8 +114,7 @@ static void render_cat(animation_t* anim, float x, float z, const double dt){
   /* render cat */
   glPushMatrix();
   {
-    printf("%f\n", x * XSCALE);
-    glTranslatef(x * XSCALE, 0.0, z);
+    glTranslatef(x * XSCALE, 0.0, -z * ZSCALE);
     //glScalef(size, size, 1.0);
     glInterleavedArrays(GL_T2F_V3F, sizeof(float)*5, vertices);
     glDrawArrays(GL_QUADS, 0, num_vertices);
