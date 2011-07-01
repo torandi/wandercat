@@ -8,7 +8,7 @@
 #include <math.h>
 
 static const float XSCALE = 2.5;
-static const float ZSCALE = 5.0;
+static const float ZSCALE = 8.0;
 
 static const unsigned int num_vertices = 4;
 static float vertices[2*num_vertices + 3*num_vertices] = {
@@ -70,8 +70,8 @@ void render_init(int w, int h){
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(pos_self.x * XSCALE, pos_self.y * ZSCALE, 2,
-  	    pos_self.x * XSCALE, pos_self.y * ZSCALE, 0,
+  gluLookAt(pos_self.x * XSCALE, 0, -pos_self.y * ZSCALE + 2,
+  	    pos_self.x * XSCALE, 0, -pos_self.y * ZSCALE + 0,
   	    0, 1, 0);
   glViewport(0, 0, w, h);
 
