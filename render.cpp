@@ -42,6 +42,7 @@ static struct animation_t {
   unsigned int current;
   float delay;
   float s;
+  float acc;
 } animation[ANIM_MAX] = {{0}};
 
 animation_t load_anim(const char* filename, unsigned int frames, unsigned int fps){
@@ -49,8 +50,9 @@ animation_t load_anim(const char* filename, unsigned int frames, unsigned int fp
   tmp.texture = new Texture(filename, frames);
   tmp.frames = frames;
   tmp.current = 0;
-  tmp.delay = 1.0f / fps;
+  tmp.delay = (float)frames / fps;
   tmp.s = 0.0f;
+  tmp.acc = 0.0f;
   return tmp;
 }
 
@@ -110,7 +112,8 @@ static void render_cat(animation_t* anim, float x, float z, const double dt){
     vertices[11] = 1-tc.c[1];
     vertices[15] = tc.d[0];
     vertices[16] = 1-tc.d[1];
-    anim->s = fmod(anim->s + dt, anim->delay * anim->frames);
+    anim->acc = fmod(anim->acc + dt, anim->delay);
+    anim->s = anim->acc / anim->delay;
   }
 
   /* render cat */
