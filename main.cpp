@@ -32,6 +32,7 @@ FILE* verbose = NULL;
 bool owner;
 bool frist = true;
 int port = PORT;
+static bool fullscreen = false;
 
 #ifdef HAVE_FAM
 static FAMConnection _fam_connection;
@@ -40,14 +41,14 @@ FAMConnection* fam_connection(){
 }
 #endif /* HAVE_FAM */
 
-static void setup(int w, int h){
+static void setup(){
 #ifdef HAVE_FAM
   if ( FAMOpen(&_fam_connection) < 0 ){
     fprintf(stderr, "Failed to open FAM connection\n");
   }
 #endif /* HAVE_FAM */
 
-  render_init(w, h);
+  render_init(800, 600, fullscreen);
   init_network();
 }
 
@@ -56,14 +57,27 @@ static void cleanup(){
 }
 
 static void poll(bool* run){
-  SDL_Event event;
-  while ( SDL_PollEvent(&event) ){
-    switch (event.type){
-    case SDL_QUIT:
-      *run = false;
-      break;
-    }
-  }
+	static int last = 0;
+
+	SDL_Event event;
+	while ( SDL_PollEvent(&event) ){
+		switch (event.type){
+		case SDL_MOUSEBUTTONDOWN:
+			{
+				int n = SDL_GetTicks();
+				if ( n - last < 200 ){
+					fullscreen = !fullscreen;
+					render_init(800, 600, fullscreen);
+				}
+				last = n;
+			}
+			break;
+
+		case SDL_QUIT:
+			*run = false;
+			break;
+		}
+	}
 }
 
 static uint16_t read_val(const char* str, int max){
@@ -148,7 +162,7 @@ int main(int argc, char* argv[]){
 	  verbose = fopen("/dev/null","w");
   }
 
-  setup(800, 600);
+  setup();
   
   bool run = true;
   struct timeval ref;

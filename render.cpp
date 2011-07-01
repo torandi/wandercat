@@ -56,13 +56,16 @@ animation_t load_anim(const char* filename, unsigned int frames, unsigned int fp
   return tmp;
 }
 
-void render_init(int w, int h){
+void render_init(int w, int h, bool fullscreen){
   /* create window */
   SDL_Init(SDL_INIT_VIDEO);
-  SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_DOUBLEBUF);
+  int flags = SDL_OPENGL | SDL_DOUBLEBUF;
+  if ( fullscreen ) flags |= SDL_FULLSCREEN;
+  SDL_SetVideoMode(w, h, 0, flags);
   glewInit();
 
   glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
   gluPerspective(45, ((float)w)/((float)h), 0.001, 100);
 
   /* orthographic projection */
