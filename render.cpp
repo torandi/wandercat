@@ -32,7 +32,7 @@ enum {
   ANIM_WALKING_NORTH,
   ANIM_WALKING_SOUTH,
   ANIM_WAIVING,
- 
+
   ANIM_MAX
 };
 
@@ -45,12 +45,12 @@ static struct animation_t {
   float acc;
 } animation[ANIM_MAX] = {{0}};
 
-animation_t load_anim(const char* filename, unsigned int frames, unsigned int fps){
+animation_t load_anim(const char* filename, unsigned int x, unsigned int y, unsigned int fps){
   animation_t tmp;
-  tmp.texture = new Texture(filename, frames);
-  tmp.frames = frames;
+  tmp.texture = new Texture(filename, x,y);
+  tmp.frames = x*y;
   tmp.current = 0;
-  tmp.delay = (float)frames / fps;
+  tmp.delay = (float)(x*y*2) / fps;
   tmp.s = 0.0f;
   tmp.acc = 0.0f;
   return tmp;
@@ -93,11 +93,11 @@ void render_init(int w, int h, bool fullscreen){
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   /* load textures */
-  animation[ANIM_WAIVING] = load_anim("data/waving.png", 17, 25);
-  animation[ANIM_WALKING_WEST] = load_anim("data/walk_left.png", 10, 20);
-  animation[ANIM_WALKING_EAST] = load_anim("data/walk_right.png", 10, 20);
-  animation[ANIM_WALKING_NORTH] = load_anim("data/walk_up.png", 16, 20);
-  animation[ANIM_WALKING_SOUTH] = load_anim("data/walk_down.png", 17, 20);
+  animation[ANIM_WAIVING] = load_anim("data/waving_large.png", 4, 4, 25);
+  animation[ANIM_WALKING_WEST] = load_anim("data/walk_left_large.png", 3,3, 20);
+  animation[ANIM_WALKING_EAST] = load_anim("data/walk_right_large.png", 3,3, 20);
+  animation[ANIM_WALKING_NORTH] = load_anim("data/walk_up_large.png", 4,4, 20);
+  animation[ANIM_WALKING_SOUTH] = load_anim("data/walk_down_large.png", 4,4, 20);
 }
 
 static void render_cat(animation_t* anim, float x, float z, const double dt){

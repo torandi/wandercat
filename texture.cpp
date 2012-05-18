@@ -46,8 +46,8 @@ Texture::texcoord_t Texture::index_to_texcoord(int i) const {
 	texcoord_t t;
 
 	// Convert 1D index to 2D position
-	int x = i % _nhorizontal;
-	int y = i / _nhorizontal;
+	int y = i % _nhorizontal;
+	int x = i / _nhorizontal;
 
 	// Calculate size of each tile
 	float w = 1.0f / _nhorizontal;
@@ -119,8 +119,8 @@ void Texture::load_texture() {
 	/* Generate texture and copy pixels to it */
 	glGenTextures(1, &_texture);
 	glBindTexture(GL_TEXTURE_2D, _texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgba_surface->w, rgba_surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba_surface->pixels );
 
 	/* The size of the texture is considered as the size of a tile */
