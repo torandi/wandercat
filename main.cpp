@@ -70,7 +70,7 @@ static void poll(bool* run){
 				int n = SDL_GetTicks();
 				if ( n - last < 200 ){
 					fullscreen = !fullscreen;
-					render_init(800, 600, fullscreen);
+					render_init(w, h, fullscreen);
 				}
 				last = n;
 			}
@@ -172,7 +172,7 @@ int main(int argc, char* argv[]){
   }
 
   setup();
-  
+
   bool run = true;
   struct timeval ref;
   gettimeofday(&ref, NULL);
@@ -191,7 +191,7 @@ int main(int argc, char* argv[]){
 	 network();
     logic(ts, dt);
 	 render(dt);
-		 
+
     /* framelimiter */
     const int delay = (REF_DT - dt) * 1000000;
     if ( delay > 0 ){
