@@ -34,6 +34,9 @@ bool frist = true;
 int port = PORT;
 static bool fullscreen = false;
 
+static int w = 800;
+static int h = 600;
+
 #ifdef HAVE_FAM
 static FAMConnection _fam_connection;
 FAMConnection* fam_connection(){
@@ -48,7 +51,7 @@ static void setup(){
   }
 #endif /* HAVE_FAM */
 
-  render_init(800, 600, fullscreen);
+  render_init(w, h, fullscreen);
   init_network();
 }
 
@@ -96,6 +99,7 @@ static void show_usage(){
   fprintf(stderr, "\n");
   fprintf(stderr, "  -s, --spawn     Have this client spawn the cat.\n");
   fprintf(stderr, "  -p, --port=PORT Use PORT for communication (default: %d).\n", PORT);
+  fprintf(stderr, "  -r, --resolution=WidthxHeight Set resolution, default 800x600\n");
   fprintf(stderr, "  -v, --verbose   Verbose output.\n");
   fprintf(stderr, "  -h, --help      This help text.\n");
 }
@@ -105,6 +109,7 @@ int main(int argc, char* argv[]){
   {
 		{"spawn",   no_argument,       0, 's' },
 		{"port",    required_argument, 0, 'p' },
+		{"resolution",    required_argument, 0, 'r' },
 		{"help",    no_argument,       0, 'h'},
 		{"verbose", no_argument, &verbose_flag, 1},
 		{0, 0, 0, 0}
@@ -113,7 +118,7 @@ int main(int argc, char* argv[]){
   int option_index = 0;
   int c;
 
-  while( (c=getopt_long(argc, argv, "sp:hv", long_options, &option_index)) != -1 ) {
+  while( (c=getopt_long(argc, argv, "sp:hvr:", long_options, &option_index)) != -1 ) {
 	switch(c) {
 		case 0:
 			break;
@@ -129,6 +134,10 @@ int main(int argc, char* argv[]){
 			exit(0);
 		case 'v':
 			verbose_flag = 1;
+			break;
+		case 'r':
+			sscanf(optarg, "%dx%d", &w, &h);
+			printf("Set resolution to %dx%d\n", w, h);
 			break;
 		default:
 			break;
