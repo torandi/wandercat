@@ -18,13 +18,16 @@ endif
 
 .SUFFIXES = .large.png .small.png .png
 
+data:
+	mkdir data
+
 %.large.png: %.png
 	convert -extent 512x512 -gravity center -background transparent $< $@
 
 %.small.png: %.png
 	convert -resize x256 -extent 256x256 -gravity center -background transparent $< $@
 
-all-local: large small
+all-local: data large small
 large: $(foreach x, walk_down walk_up walk_left walk_right waving, data/$(x)_large.png)
 small: $(foreach x, walk_down walk_up walk_left walk_right waving, data/$(x)_small.png)
 
